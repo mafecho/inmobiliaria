@@ -1,0 +1,22 @@
+{
+  "name": "vivantia",
+  "version": "0.1.0",
+  "description": "Landing page de Vivantia Bienes Raíces — vivantia.enelmapa.co",
+  "main": "server.js",
+  "scripts": {
+    "start": "node --env-file-if-exists=.env server.js",
+    "dev": "node --env-file-if-exists=.env --watch server.js",
+    "test": "jest --runInBand"
+  },
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "express": "^4.21.0",
+    "express-rate-limit": "^8.6.2",
+    "mysql2": "^3.11.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "jest": "^30.4.2",
+    "supertest": "^7.2.2"
+  }
+}

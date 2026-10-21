@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vivantia Bienes Raíces — Inmobiliaria familiar con asesoría legal y técnica</title>
+  <meta name="description" content="Compra, venta y arriendo de propiedades, más asesoría urbanística, licencias de construcción, planos arquitectónicos y estructurales. Un solo equipo, de principio a fin.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <%- include('partials/header') %>
+  <main>
+    <%- include('partials/hero') %>
+    <%- include('partials/value-props') %>
+    <%- include('partials/services') %>
+    <%- include('partials/destacados') %>
+    <%- include('partials/consigna', { formStatus }) %>
+    <%- include('partials/porque-elegirnos') %>
+    <%- include('partials/faq') %>
+  </main>
+  <%- include('partials/footer') %>
+  <%- include('partials/whatsapp-fab') %>
+  <script src="/js/main.js"></script>
+</body>
+</html>

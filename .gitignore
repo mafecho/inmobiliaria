@@ -1,0 +1,9 @@
+node_modules/
+db/*.db
+
+# El .htaccess de producción (cPanel/Passenger) no se versiona: ahí viven las
+# variables de entorno reales del servidor. Ver deploy/deploy.sh.
+.htaccess
+
+# Secretos locales.
+.env

@@ -1,0 +1,42 @@
+<%
+  // Portafolio de ejemplo — Fase 1 no tiene catálogo en base de datos todavía
+  // (eso es Fase 2). Tarjetas con imagen placeholder, nunca con fotos de
+  // terceros sin derechos.
+  const muestra = [
+    { tipo: 'Apartamento', operacion: 'Venta', zona: 'Zona Norte', precio: 'Desde $450M', habs: 3, banos: 2, area: '110 m²' },
+    { tipo: 'Casa', operacion: 'Venta', zona: 'Zona Sur', precio: 'Desde $680M', habs: 4, banos: 3, area: '180 m²' },
+    { tipo: 'Apartamento', operacion: 'Arriendo', zona: 'Centro', precio: 'Desde $2.2M / mes', habs: 2, banos: 1, area: '75 m²' }
+  ];
+%>
+<section class="section" id="destacados">
+  <div class="section-head">
+    <span class="eyebrow">Portafolio</span>
+    <h2>Una muestra de nuestras propiedades</h2>
+    <p>Catálogo de ejemplo mientras publicamos el inventario completo. Escríbanos para recibir opciones a su medida.</p>
+  </div>
+
+  <div class="properties-scroller">
+    <% muestra.forEach(function (p) { %>
+      <article class="property-card">
+        <div class="property-card__media">
+          <span class="property-card__badge">Próximamente</span>
+          Fotografía en camino
+        </div>
+        <div class="property-card__body">
+          <h3><%= p.tipo %> en <%= p.operacion.toLowerCase() %></h3>
+          <p class="property-card__location"><%= p.zona %></p>
+          <p class="property-card__price"><%= p.precio %></p>
+          <div class="property-card__meta">
+            <span><%= p.habs %> hab.</span>
+            <span><%= p.banos %> baños</span>
+            <span><%= p.area %></span>
+          </div>
+        </div>
+      </article>
+    <% }); %>
+  </div>
+
+  <p class="properties-note">
+    ¿Busca algo específico? <a href="#consigna" data-lead-tipo="comprar" data-lead-etiqueta="Buscar una propiedad a la medida" style="color: var(--color-primary); font-weight: 700;">Cuéntenos qué necesita →</a>
+  </p>
+</section>

@@ -1,0 +1,51 @@
+<section class="hero">
+  <span class="eyebrow">Inmobiliaria familiar · Asesoría integral</span>
+  <h1>Compre, arriende o legalice su próximo proyecto con un solo aliado.</h1>
+  <p class="lead">
+    Vivantia acompaña todo el proceso: la búsqueda o consignación del
+    inmueble, y la parte técnica y legal — urbanística, licencias de
+    construcción, planos arquitectónicos y estructurales — con el mismo
+    equipo de principio a fin.
+  </p>
+
+  <div class="segmented" role="tablist" aria-label="Qué desea hacer">
+    <button type="button" class="is-active" data-lead-tipo="comprar" data-lead-etiqueta="Comprar una propiedad" onclick="document.getElementById('destacados').scrollIntoView({behavior:'smooth'})">Comprar</button>
+    <button type="button" data-lead-tipo="arrendar" data-lead-etiqueta="Arrendar una propiedad" onclick="document.getElementById('destacados').scrollIntoView({behavior:'smooth'})">Arrendar</button>
+    <button type="button" data-lead-tipo="consignar" data-lead-etiqueta="Consignar mi inmueble" onclick="document.getElementById('consigna').scrollIntoView({behavior:'smooth'})">Consignar</button>
+  </div>
+
+  <div class="search-card">
+    <div class="search-card__grid">
+      <div class="field">
+        <label for="hero-tipo">Tipo de inmueble</label>
+        <select id="hero-tipo">
+          <option>Apartamento</option>
+          <option>Casa</option>
+          <option>Penthouse</option>
+          <option>Lote</option>
+          <option>Local / Oficina</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="hero-zona">Zona</label>
+        <select id="hero-zona">
+          <option>Cualquier zona</option>
+          <option>Norte</option>
+          <option>Centro</option>
+          <option>Sur</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="hero-precio">Presupuesto</label>
+        <select id="hero-precio">
+          <option>Cualquier precio</option>
+          <option>Hasta $300M</option>
+          <option>$300M - $600M</option>
+          <option>Más de $600M</option>
+        </select>
+      </div>
+    </div>
+    <a href="#destacados" class="btn btn--primary btn--block">Buscar propiedades</a>
+    <p class="search-card__note">Catálogo completo en construcción — vea una muestra del portafolio abajo.</p>
+  </div>
+</section>

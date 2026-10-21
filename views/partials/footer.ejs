@@ -1,0 +1,35 @@
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <%- include('brand') %>
+      <p>Inmobiliaria familiar con asesoría urbanística, legal y técnica integrada.</p>
+    </div>
+
+    <div>
+      <h4>Navegación</h4>
+      <ul>
+        <li><a href="#destacados">Propiedades</a></li>
+        <li><a href="#servicios">Servicios</a></li>
+        <li><a href="#nosotros">Nosotros</a></li>
+        <li><a href="#preguntas">Preguntas frecuentes</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h4>Contacto</h4>
+      <ul>
+        <% if (contacto.whatsapp) { %>
+          <li><a href="https://wa.me/<%= contacto.whatsapp %>" target="_blank" rel="noopener">WhatsApp</a></li>
+        <% } %>
+        <% if (contacto.email) { %>
+          <li><a href="mailto:<%= contacto.email %>"><%= contacto.email %></a></li>
+        <% } %>
+        <li><a href="#consigna">Formulario de contacto</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    &copy; <%= new Date().getFullYear() %> Vivantia Bienes Raíces. Todos los derechos reservados.
+  </div>
+</footer>

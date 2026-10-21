@@ -1,0 +1,44 @@
+<section class="section" id="consigna">
+  <div class="consign-wrap">
+    <div class="consign-copy">
+      <span class="eyebrow">Hablemos de su proyecto</span>
+      <h2>Consigne, pregunte o solicite un servicio</h2>
+      <p>Un solo formulario para todo: consignar su inmueble, buscar uno nuevo, o pedir asesoría legal, de licencias o de planos.</p>
+      <ul>
+        <li>Respuesta de un asesor, no de un bot.</li>
+        <li>Sin exclusividad obligatoria para consignar.</li>
+        <li>Primera orientación sin costo.</li>
+      </ul>
+    </div>
+
+    <form class="consign-form" method="POST" action="/contacto">
+      <% if (formStatus === 'ok') { %>
+        <div class="form-banner form-banner--ok">¡Gracias! Recibimos su solicitud y le contactaremos pronto.</div>
+      <% } else if (formStatus === 'error') { %>
+        <div class="form-banner form-banner--error">Revise los datos — falta algún campo obligatorio o el formato no es válido.</div>
+      <% } %>
+
+      <p class="selected-tipo">Consulta sobre: <span id="lead-tipo-label">Contacto general</span></p>
+      <input type="hidden" name="tipo" id="lead-tipo" value="contacto">
+
+      <div class="field">
+        <label for="nombre">Nombre completo</label>
+        <input type="text" id="nombre" name="nombre" required maxlength="150">
+      </div>
+      <div class="field">
+        <label for="telefono">Celular / WhatsApp</label>
+        <input type="tel" id="telefono" name="telefono" required maxlength="30">
+      </div>
+      <div class="field">
+        <label for="email">Correo (opcional)</label>
+        <input type="email" id="email" name="email" maxlength="150">
+      </div>
+      <div class="field">
+        <label for="mensaje">Cuéntenos brevemente qué necesita (opcional)</label>
+        <textarea id="mensaje" name="mensaje" rows="3" maxlength="1000"></textarea>
+      </div>
+
+      <button type="submit" class="btn btn--primary btn--block">Enviar solicitud</button>
+    </form>
+  </div>
+</section>
