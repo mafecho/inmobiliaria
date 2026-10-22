@@ -29,8 +29,8 @@ function loadConfig(env = process.env) {
       database: env.DB_NAME || 'vivantia'
     },
     // Sin default real a propósito: todavía no hay un WhatsApp/correo
-    // definitivo de Vivantia. La vista oculta el botón de WhatsApp cuando
-    // viene vacío en vez de mostrar un contacto inventado.
+    // definitivo de Echavarría Grupo Inmobiliario. La vista oculta el botón
+    // de WhatsApp cuando viene vacío en vez de mostrar un contacto inventado.
     contacto: {
       whatsapp: env.CONTACTO_WHATSAPP || '',
       email: env.CONTACTO_EMAIL || ''

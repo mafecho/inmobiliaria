@@ -16,7 +16,7 @@ runMigrations(config.db, container.logger).then(({ aplicadas }) => {
   const app = createApp(container);
 
   app.listen(config.port, () => {
-    container.logger.info('Vivantia escuchando', {
+    container.logger.info('Echavarría Grupo Inmobiliario escuchando', {
       port: config.port, domain: config.domain, env: config.nodeEnv
     });
   });

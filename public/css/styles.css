@@ -1,24 +1,26 @@
 /* ===========================================================================
-   Vivantia — Design tokens tomados de stitch_vivantia_inmobiliaria_website/DESIGN.md
-   "Editorial Minimalist Luxury": emerald + satin gold, Playfair Display +
-   Plus Jakarta Sans. Un solo archivo a propósito: Fase 1 es una landing de
-   una página, sin bundler (igual que enelmapa).
+   Echavarría Grupo Inmobiliario — "Editorial Minimalist Luxury": azul marino
+   + dorado satinado, Playfair Display + Plus Jakarta Sans. Paleta actualizada
+   del verde esmeralda original (ver stitch_vivantia_inmobiliaria_website/DESIGN.md,
+   diseño de referencia de la marca anterior) al azul marino del logo actual.
+   Un solo archivo a propósito: Fase 1 es una landing de una página, sin
+   bundler (igual que enelmapa).
    ======================================================================== */
 
 :root {
   /* Color */
-  --color-primary: #0F382C;        /* Deep Forest Emerald */
-  --color-primary-hover: #134E3A;  /* Deep Sea Pine */
+  --color-primary: #10254A;        /* Azul marino profundo */
+  --color-primary-hover: #1C3A6E;  /* Azul marino claro (hover) */
   --color-on-primary: #FFFFFF;
-  --color-secondary: #C5A059;      /* Satin Champagne Gold */
-  --color-on-surface: #1A2421;     /* Charcoal Pine */
-  --color-on-surface-variant: #414845;
-  --color-background: #FAF8F5;     /* Warm alabaster */
+  --color-secondary: #C9A24C;      /* Dorado satinado */
+  --color-on-surface: #141B2E;     /* Carbón azulado */
+  --color-on-surface-variant: #4A5268;
+  --color-background: #F6F7FA;     /* Blanco frío */
   --color-surface: #FFFFFF;
-  --color-surface-alt: #F4F5F4;
-  --color-outline: #E2E4E2;
-  --color-border-gold: rgba(197, 160, 89, 0.3);
-  --color-border-pine: rgba(15, 56, 44, 0.08);
+  --color-surface-alt: #EEF1F6;
+  --color-outline: #DADFE8;
+  --color-border-gold: rgba(201, 162, 76, 0.3);
+  --color-border-pine: rgba(16, 37, 74, 0.08);
   --color-error: #BA1A1A;
 
   /* Tipografía */
@@ -42,8 +44,8 @@
   --margin: 1rem;
 
   /* Sombras */
-  --shadow-card: 0 4px 20px -2px rgba(26, 36, 33, 0.08);
-  --shadow-elevated: 0 12px 32px -4px rgba(15, 56, 44, 0.14);
+  --shadow-card: 0 4px 20px -2px rgba(20, 27, 46, 0.08);
+  --shadow-elevated: 0 12px 32px -4px rgba(16, 37, 74, 0.14);
 }
 
 @media (min-width: 768px) {
@@ -129,7 +131,7 @@ h2 { font-size: 24px; line-height: 32px; }
   border-color: var(--color-secondary);
   color: var(--color-primary);
 }
-.btn--secondary:hover { background: rgba(197, 160, 89, 0.1); }
+.btn--secondary:hover { background: rgba(201, 162, 76, 0.1); }
 
 .btn--block { width: 100%; }
 
@@ -285,7 +287,7 @@ h2 { font-size: 24px; line-height: 32px; }
 .field textarea:focus {
   outline: none;
   border-color: var(--color-secondary);
-  box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.25);
+  box-shadow: 0 0 0 3px rgba(201, 162, 76, 0.25);
 }
 
 .search-card__note { font-size: 12px; color: var(--color-on-surface-variant); margin-top: var(--space-sm); text-align: center; }
@@ -362,7 +364,7 @@ h2 { font-size: 24px; line-height: 32px; }
 
 .property-card__media {
   aspect-ratio: 4 / 3;
-  background: linear-gradient(135deg, #0F382C, #134E3A 55%, #1A2421);
+  background: linear-gradient(135deg, #10254A, #1C3A6E 55%, #141B2E);
   position: relative;
   display: flex;
   align-items: center;
@@ -376,7 +378,7 @@ h2 { font-size: 24px; line-height: 32px; }
 .property-card__badge {
   position: absolute;
   top: 0.75rem; left: 0.75rem;
-  background: rgba(15, 56, 44, 0.85);
+  background: rgba(16, 37, 74, 0.85);
   color: var(--color-secondary);
   font-size: 10px;
   font-weight: 700;
@@ -384,7 +386,7 @@ h2 { font-size: 24px; line-height: 32px; }
   text-transform: uppercase;
   padding: 0.3rem 0.6rem;
   border-radius: var(--radius-full);
-  box-shadow: inset 0 0 0 1px rgba(197, 160, 89, 0.45);
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 76, 0.45);
 }
 
 .property-card__body { padding: var(--space-md); }
@@ -440,7 +442,7 @@ h2 { font-size: 24px; line-height: 32px; }
   font-size: 13px;
   margin-bottom: var(--space-sm);
 }
-.form-banner--ok { background: rgba(197, 160, 89, 0.18); color: var(--color-on-surface); border: 1px solid var(--color-border-gold); }
+.form-banner--ok { background: rgba(201, 162, 76, 0.18); color: var(--color-on-surface); border: 1px solid var(--color-border-gold); }
 .form-banner--error { background: rgba(186, 26, 26, 0.08); color: var(--color-error); border: 1px solid rgba(186, 26, 26, 0.3); }
 
 .selected-tipo {
@@ -546,7 +548,7 @@ h2 { font-size: 24px; line-height: 32px; }
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 24px rgba(15, 56, 44, 0.3);
+  box-shadow: 0 8px 24px rgba(16, 37, 74, 0.3);
   z-index: 50;
   text-decoration: none;
 }

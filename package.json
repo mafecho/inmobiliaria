@@ -1,7 +1,7 @@
 {
   "name": "vivantia",
   "version": "0.1.0",
-  "description": "Landing page de Vivantia Bienes Raíces — vivantia.enelmapa.co",
+  "description": "Landing page de Echavarría Grupo Inmobiliario — vivantia.enelmapa.co",
   "main": "server.js",
   "scripts": {
     "start": "node --env-file-if-exists=.env server.js",
