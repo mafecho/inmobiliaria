@@ -5,8 +5,8 @@ Guía para trabajar en este repositorio con Claude Code.
 ## Proyecto
 
 **Echavarría Grupo Inmobiliario** — landing page de una inmobiliaria familiar
-(`echavarria-gi.com`, dominio oficial desde el 2026-11-17; antes vivía en el
-subdominio temporal `vivantia.enelmapa.co`, ya eliminado — ver más abajo).
+(`echavarria-gi.com`, dominio oficial desde el 2026-11-17; antes había un
+subdominio de prueba, `vivantia.enelmapa.co`, ya eliminado — ver más abajo).
 Fase 1: una sola página pública con portafolio de ejemplo y un formulario de
 contacto. Node.js + Express + EJS, sin bundler, MySQL (`mysql2`) sólo para
 guardar los leads del formulario.
@@ -34,6 +34,12 @@ nombres del script y del log de despliegue. El único "vivantia" que queda a
 propósito es `stitch_vivantia_inmobiliaria_website/`: es el export del
 diseño de la marca original y conserva su nombre para no perder la
 procedencia.
+
+El subdominio viejo **era solo una prueba**: no tenía tráfico ni leads que
+valiera la pena conservar, así que se borró por completo —sin redirect— con
+su base de datos y su app de Node. Si aparece una referencia a
+`vivantia.enelmapa.co` en algún lado, es un resto que se puede eliminar sin
+pensarlo dos veces.
 
 ## Comandos
 
@@ -93,8 +99,8 @@ Mismo mecanismo que enelmapa: cron (no webhook) corriendo
 `deploy/deploy.sh` cada 5 minutos en la cuenta cPanel `moralesbilma`, que
 hace `git fetch` + `git reset --hard origin/main` y reinicia Passenger.
 
-Rutas en el servidor, todas migradas el 2026-11-17 desde
-`public_html/vivantia.enelmapa.co`:
+Rutas en el servidor, aprovisionadas el 2026-11-17 en reemplazo de las del
+subdominio de prueba (`public_html/vivantia.enelmapa.co`):
 
 - docroot / application root: `/home/moralesbilma/public_html/echavarria-gi.com`
 - nodevenv: `/home/moralesbilma/nodevenv/public_html/echavarria-gi.com/22/bin`
