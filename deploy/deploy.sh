@@ -2,22 +2,22 @@
 #
 # Deploy por cron para el hosting de cPanel/Passenger — mismo mecanismo que
 # enelmapa.co en la misma cuenta. Esta copia está versionada para revisarla;
-# la que CORRE vive fuera del docroot, en /home/<user>/deploy-vivantia.sh,
-# porque cualquier cosa dentro de public_html/vivantia.enelmapa.co es
+# la que CORRE vive fuera del docroot, en /home/<user>/deploy-echavarria.sh,
+# porque cualquier cosa dentro de public_html/echavarria-gi.com es
 # alcanzable por URL y este script ejecuta git y npm.
 #
 # Instalación (una sola vez):
-#   cp deploy/deploy.sh /home/<user>/deploy-vivantia.sh && chmod 755 /home/<user>/deploy-vivantia.sh
-#   cron cada 5 minutos:  */5 * * * * /home/<user>/deploy-vivantia.sh
+#   cp deploy/deploy.sh /home/<user>/deploy-echavarria.sh && chmod 755 /home/<user>/deploy-echavarria.sh
+#   cron cada 5 minutos:  */5 * * * * /home/<user>/deploy-echavarria.sh
 #
 set -eo pipefail
 
-APP=/home/moralesbilma/public_html/vivantia.enelmapa.co
-VENV=/home/moralesbilma/nodevenv/public_html/vivantia.enelmapa.co/22/bin
-BAK=/home/moralesbilma/.htaccess.vivantia.produccion
-SELF=/home/moralesbilma/deploy-vivantia.sh
-LOG=/home/moralesbilma/deploy-vivantia.log
-URL=https://vivantia.enelmapa.co/
+APP=/home/moralesbilma/public_html/echavarria-gi.com
+VENV=/home/moralesbilma/nodevenv/public_html/echavarria-gi.com/22/bin
+BAK=/home/moralesbilma/.htaccess.echavarria.produccion
+SELF=/home/moralesbilma/deploy-echavarria.sh
+LOG=/home/moralesbilma/deploy-echavarria.log
+URL=https://echavarria-gi.com/
 
 cd "$APP"
 

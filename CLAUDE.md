@@ -5,11 +5,11 @@ Guía para trabajar en este repositorio con Claude Code.
 ## Proyecto
 
 **Echavarría Grupo Inmobiliario** — landing page de una inmobiliaria familiar
-(`vivantia.enelmapa.co`, subdominio temporal mientras se compra el dominio
-propio; el nombre técnico del subdominio quedó de la marca anterior del
-proyecto, "Vivantia" — ver más abajo). Fase 1: una sola página pública con
-portafolio de ejemplo y un formulario de contacto. Node.js + Express + EJS,
-sin bundler, MySQL (`mysql2`) sólo para guardar los leads del formulario.
+(`echavarria-gi.com`, dominio oficial desde el 2026-11-17; antes vivía en el
+subdominio temporal `vivantia.enelmapa.co`, ya eliminado — ver más abajo).
+Fase 1: una sola página pública con portafolio de ejemplo y un formulario de
+contacto. Node.js + Express + EJS, sin bundler, MySQL (`mysql2`) sólo para
+guardar los leads del formulario.
 
 Mismo patrón arquitectónico que `enelmapa` (otro proyecto en esta cuenta de
 cPanel): composition root en `container.js`, capas `routes/ → services/ →
@@ -19,15 +19,21 @@ módulo. A diferencia de enelmapa, **no hay multi-tenancy ni sesiones/login**
 de administración.
 
 **Sobre el nombre:** el proyecto se planeó originalmente como "Vivantia
-Bienes Raíces" (de ahí `stitch_vivantia_inmobiliaria_website/`, el dominio
-`vivantia.enelmapa.co`, la base de datos `moralesbilma_vivantia` y el
-nombre de la app de Node en el servidor). El 2026-10-21 el cliente decidió
-renombrar la marca a "Echavarría Grupo Inmobiliario" con una paleta azul
-marino + dorado. Se actualizó todo el texto y los colores visibles, pero
-**los identificadores técnicos (subdominio, base de datos, nombre de la app)
-se dejaron como "vivantia" a propósito**, para no repetir el proceso de
-aprovisionamiento del servidor — cambiarlos es trabajo aparte si algún día
-hace falta.
+Bienes Raíces" (de ahí `stitch_vivantia_inmobiliaria_website/`, el
+subdominio `vivantia.enelmapa.co`, la base de datos `moralesbilma_vivantia`
+y el nombre de la app de Node en el servidor). El 2026-10-21 el cliente
+renombró la marca a "Echavarría Grupo Inmobiliario" con una paleta azul
+marino + dorado: se actualizó todo el texto y los colores visibles, pero los
+identificadores técnicos se dejaron como "vivantia" porque el dominio propio
+todavía no se había comprado.
+
+El 2026-11-17 llegó el dominio oficial `echavarria-gi.com` (dominio
+adicional en la misma cuenta cPanel) y **se renombró todo lo técnico a
+"echavarria"**: docroot, app de Node, base de datos, paquete npm y los
+nombres del script y del log de despliegue. El único "vivantia" que queda a
+propósito es `stitch_vivantia_inmobiliaria_website/`: es el export del
+diseño de la marca original y conserva su nombre para no perder la
+procedencia.
 
 ## Comandos
 
@@ -85,7 +91,19 @@ actual.
 
 Mismo mecanismo que enelmapa: cron (no webhook) corriendo
 `deploy/deploy.sh` cada 5 minutos en la cuenta cPanel `moralesbilma`, que
-hace `git fetch` + `git reset --hard origin/main` y reinicia Passenger. El
-subdominio `vivantia.enelmapa.co` y su base de datos MySQL todavía no están
-creados en el servidor — ver conversación con el usuario antes de asumir que
-existen.
+hace `git fetch` + `git reset --hard origin/main` y reinicia Passenger.
+
+Rutas en el servidor, todas migradas el 2026-11-17 desde
+`public_html/vivantia.enelmapa.co`:
+
+- docroot / application root: `/home/moralesbilma/public_html/echavarria-gi.com`
+- nodevenv: `/home/moralesbilma/nodevenv/public_html/echavarria-gi.com/22/bin`
+- script que corre el cron: `/home/moralesbilma/deploy-echavarria.sh`
+  (copia fuera del docroot; se auto-actualiza desde `deploy/deploy.sh`)
+- log: `/home/moralesbilma/deploy-echavarria.log`
+- base de datos: `moralesbilma_echavarria`
+
+El `.htaccess` de producción no está en el repo (lleva el bloque de
+Passenger y las variables de entorno reales); `deploy.sh` lo respalda en
+`/home/moralesbilma/.htaccess.echavarria.produccion` antes de cada
+`git reset`.

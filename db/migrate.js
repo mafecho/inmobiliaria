@@ -40,7 +40,7 @@ async function runMigrations(dbConfig, logger = console, { dir = DIR } = {}) {
   // Candado con nombre del lado de MySQL: evita que dos arranques simultáneos
   // (p.ej. `--watch` reiniciando, o varios workers de Passenger) apliquen la
   // misma migración a la vez.
-  const candado = 'vivantia_migraciones_' + dbConfig.database;
+  const candado = 'echavarria_migraciones_' + dbConfig.database;
 
   try {
     const [[tomado]] = await conn.query('SELECT GET_LOCK(?, ?) AS ok', [candado, ESPERA_CANDADO_S]);

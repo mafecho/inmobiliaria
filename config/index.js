@@ -2,7 +2,7 @@
 // Mismo patrón que enelmapa (ver su config/index.js), simplificado porque acá
 // no hay multi-tenancy, sesiones ni superadmin — Fase 1 es una sola landing.
 
-const DEFAULT_DOMAIN = 'vivantia.enelmapa.co';
+const DEFAULT_DOMAIN = 'echavarria-gi.com';
 const DEFAULT_PORT = 3000;
 const DEFAULT_RATE_WINDOW_MIN = 15;
 const DEFAULT_CONTACT_MAX = 10;
@@ -26,7 +26,7 @@ function loadConfig(env = process.env) {
       host: env.DB_HOST || 'localhost',
       user: env.DB_USER || 'root',
       password: env.DB_PASS || '',
-      database: env.DB_NAME || 'vivantia'
+      database: env.DB_NAME || 'echavarria'
     },
     // Sin default real a propósito: todavía no hay un WhatsApp/correo
     // definitivo de Echavarría Grupo Inmobiliario. La vista oculta el botón
