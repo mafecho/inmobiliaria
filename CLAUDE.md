@@ -113,3 +113,38 @@ El `.htaccess` de producción no está en el repo (lleva el bloque de
 Passenger y las variables de entorno reales); `deploy.sh` lo respalda en
 `/home/moralesbilma/.htaccess.echavarria.produccion` antes de cada
 `git reset`.
+
+### Puesta en marcha en cPanel (hecha el 2026-11-24)
+
+Crear las rutas y la base **no** basta para que el sitio responda: hay que
+registrar la app en **cPanel → Setup Node.js App** (application root
+`public_html/echavarria-gi.com`, startup file `server.js`, Node 22, modo
+`Production`). Ese paso es el que escribe el bloque de Passenger en el
+`.htaccess`; sin él Apache no tiene handler de Node.
+
+Dos cosas que el registro de la app **no** resuelve, y que fueron la causa
+de que el dominio no mostrara nada:
+
+- **`node_modules` no se instala solo.** Está en `.gitignore`, así que el
+  clon del docroot llega sin dependencias y el primer `require('express')`
+  tumba el arranque: Passenger responde 500 en todas las rutas con "Web
+  application could not be started". Lo instala `deploy.sh` cuando cambia
+  `package.json`, o el botón *Run NPM Install*.
+- **La raíz mostraba el listado del código fuente.** `mod_autoindex` de
+  Apache atiende `/` antes de pasarle la petición a Passenger, y cPanel no
+  escribe nada que lo evite. Ahora `deploy.sh` garantiza `DirectoryIndex
+  disabled` y `Options -Indexes` de forma idempotente, con respaldo en
+  `/home/moralesbilma/.htaccess.echavarria.antes-directivas`.
+
+**Diagnóstico remoto sin acceso a cPanel:** Passenger sobre Apache sirve
+directamente cualquier archivo que exista en disco, así que el código de
+respuesta delata el estado del servidor — un archivo del repo da 200 y una
+ruta inexistente cae a Passenger. Con la app caída, eso hace que
+`/node_modules/express/package.json` devolviendo 500 (igual que un archivo
+inventado) sea prueba de que las dependencias no están instaladas.
+
+Consecuencia de ese mismo comportamiento, pendiente de cerrar: el fuente es
+legible por HTTP (`/server.js`, `/package.json`). No es algo propio de este
+proyecto —`enelmapa.co` se comporta igual— pero conviene arreglarlo. Ojo al
+hacerlo: un `FilesMatch` por extensión `.js` bloquearía `/js/main.js`, que
+Express sirve desde `public/` y la landing necesita.
