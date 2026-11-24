@@ -61,10 +61,20 @@ botón flotante de WhatsApp simplemente no se renderiza — ver `config/index.js
 
 ## Arquitectura
 
-`server.js` → `loadConfig()` → `createContainer(config)` → corre
-`db/migrate.js` → `createApp(container)` → `listen`. El container es el
-único lugar que arma dependencias; `app.js` lo destructura y cada router
-recibe sólo lo que usa.
+`server.js` → `loadConfig()` → `createContainer(config)` →
+`createApp(container)` → `listen`, y `db/migrate.js` corre **después** del
+`listen`, en paralelo. El container es el único lugar que arma
+dependencias; `app.js` lo destructura y cada router recibe sólo lo que usa.
+
+Ese orden es deliberado y cambió el 2026-11-24: antes las migraciones
+bloqueaban el `listen` y cualquier falla hacía `process.exit(1)`. Como la
+landing se renderiza sólo con valores de config y no toca la base (sólo
+`POST /contacto` y `/salud` la necesitan), un problema de MySQL dejaba caída
+una página que no lee MySQL — y en Passenger, con varios workers arrancando
+a la vez, el candado de migraciones podía hacer esperar 30s a los que
+pierden la carrera y pasarse del tiempo de arranque tolerado. Ahora una
+falla de migraciones se registra en el log y `/salud` responde 503, que es
+el canal correcto para avisar; el proceso no se cae.
 
 Única tabla de Fase 1: `leads` (`db/migrations/001_leads.sql`), alimentada
 por un solo formulario (`/contacto`) que cubre consignar, comprar, arrendar
