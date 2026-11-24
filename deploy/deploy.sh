@@ -15,6 +15,7 @@ set -eo pipefail
 APP=/home/moralesbilma/public_html/echavarria-gi.com
 VENV=/home/moralesbilma/nodevenv/public_html/echavarria-gi.com/22/bin
 BAK=/home/moralesbilma/.htaccess.echavarria.produccion
+BAK_DIRECTIVAS=/home/moralesbilma/.htaccess.echavarria.antes-directivas
 SELF=/home/moralesbilma/deploy-echavarria.sh
 LOG=/home/moralesbilma/deploy-echavarria.log
 URL=https://echavarria-gi.com/
@@ -46,6 +47,35 @@ if [ ! -f .htaccess ] && [ -f "$BAK" ]; then
   cp -p "$BAK" .htaccess
   echo "$(date -Is) .htaccess restaurado desde el respaldo" >> "$LOG"
 fi
+
+# Apache atiende "/" con mod_autoindex antes de pasarle la petición a
+# Passenger, así que sin estas directivas la raíz muestra un listado del
+# código fuente en vez de la landing. cPanel no las escribe al crear la app
+# de Node, y el .htaccess no está en el repo, así que las garantizamos acá.
+# Se agregan al final porque en Apache la última directiva gana.
+asegurar_directiva_htaccess() {
+  local directiva="$1"
+
+  if [ ! -f .htaccess ]; then
+    return 0
+  fi
+
+  if grep -qiF "$directiva" .htaccess; then
+    return 0
+  fi
+
+  # Respaldo único de cómo venía el .htaccess de cPanel, por si una de estas
+  # directivas no está permitida por el AllowOverride del servidor.
+  if [ ! -f "$BAK_DIRECTIVAS" ]; then
+    cp -p .htaccess "$BAK_DIRECTIVAS"
+  fi
+
+  printf '\n%s\n' "$directiva" >> .htaccess
+  echo "$(date -Is) .htaccess: agregada la directiva '$directiva'" >> "$LOG"
+}
+
+asegurar_directiva_htaccess 'DirectoryIndex disabled'
+asegurar_directiva_htaccess 'Options -Indexes'
 
 if ! git diff --quiet "$ANTES" "$REMOTO" -- package.json package-lock.json; then
   echo "$(date -Is) cambiaron las dependencias, instalando" >> "$LOG"
