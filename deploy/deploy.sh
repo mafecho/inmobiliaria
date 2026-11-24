@@ -16,6 +16,7 @@ APP=/home/moralesbilma/public_html/echavarria-gi.com
 VENV=/home/moralesbilma/nodevenv/public_html/echavarria-gi.com/22/bin
 BAK=/home/moralesbilma/.htaccess.echavarria.produccion
 BAK_DIRECTIVAS=/home/moralesbilma/.htaccess.echavarria.antes-directivas
+BAK_STARTUP=/home/moralesbilma/.htaccess.echavarria.antes-startupfile
 SELF=/home/moralesbilma/deploy-echavarria.sh
 LOG=/home/moralesbilma/deploy-echavarria.log
 URL=https://echavarria-gi.com/
@@ -73,6 +74,43 @@ asegurar_directiva_htaccess() {
   printf '\n%s\n' "$directiva" >> .htaccess
   echo "$(date -Is) .htaccess: agregada la directiva '$directiva'" >> "$LOG"
 }
+
+# cPanel traduce su campo "Archivo de inicio de la aplicación" a la directiva
+# PassengerStartupFile del .htaccess, y quedó apuntando a app.js. app.js sólo
+# hace `module.exports = { createApp }`: nunca llama a listen(), así que
+# Passenger espera un puerto que nadie abre y falla con "could not be
+# started" en TODAS las rutas, incluso las que no tocan la base. El arranque
+# real es server.js (package.json declara "main": "server.js").
+#
+# Se fuerza desde acá porque el campo de la interfaz de cPanel no persistió
+# el cambio, y este script es el único camino al .htaccess que no depende de
+# esa pantalla. Idempotente: si ya dice server.js, no toca nada.
+asegurar_startup_file() {
+  if [ ! -f .htaccess ]; then
+    return 0
+  fi
+
+  if grep -qE '^[[:space:]]*PassengerStartupFile[[:space:]]+"?server\.js"?[[:space:]]*$' .htaccess; then
+    return 0
+  fi
+
+  if [ ! -f "$BAK_STARTUP" ]; then
+    cp -p .htaccess "$BAK_STARTUP"
+  fi
+
+  if grep -qE '^[[:space:]]*PassengerStartupFile' .htaccess; then
+    cp -p .htaccess .htaccess.nuevo
+    sed -E 's|^([[:space:]]*)PassengerStartupFile[[:space:]]+.*$|\1PassengerStartupFile server.js|' \
+      .htaccess > .htaccess.nuevo
+    mv .htaccess.nuevo .htaccess
+    echo "$(date -Is) .htaccess: PassengerStartupFile reescrito a server.js" >> "$LOG"
+  else
+    printf '\n%s\n' 'PassengerStartupFile server.js' >> .htaccess
+    echo "$(date -Is) .htaccess: PassengerStartupFile agregado (server.js)" >> "$LOG"
+  fi
+}
+
+asegurar_startup_file
 
 asegurar_directiva_htaccess 'DirectoryIndex disabled'
 asegurar_directiva_htaccess 'Options -Indexes'
