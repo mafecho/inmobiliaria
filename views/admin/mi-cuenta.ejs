@@ -1,0 +1,59 @@
+<%- include('partials/head', { titulo: titulo }) %>
+<%- include('partials/nav', { seccion: '' }) %>
+
+<main class="admin-main admin-main--angosto">
+  <div class="admin-head">
+    <div>
+      <a class="volver" href="/admin">← Propiedades</a>
+      <h1>Mi cuenta</h1>
+    </div>
+  </div>
+
+  <%- include('partials/flash') %>
+
+  <section class="panel">
+    <h2>Datos</h2>
+    <dl class="datos">
+      <dt>Nombre</dt>
+      <dd><%= usuario.nombre %></dd>
+      <dt>Correo</dt>
+      <dd><%= usuario.email %></dd>
+      <dt>Rol</dt>
+      <dd><%= usuario.rol === 'admin' ? 'Administrador' : 'Asesor' %></dd>
+    </dl>
+    <p class="nota">
+      El nombre y el rol los cambia un administrador desde la sección
+      <em>Asesores</em>.
+    </p>
+  </section>
+
+  <section class="panel">
+    <h2>Cambiar contraseña</h2>
+    <p class="nota">
+      Al cambiarla se cierran todas las sesiones de esta cuenta, incluida ésta:
+      va a tener que entrar de nuevo con la contraseña nueva.
+    </p>
+
+    <form method="post" action="/admin/mi-cuenta/password" class="form-inline">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+      <div class="field">
+        <label for="password">Contraseña nueva <span class="req">*</span></label>
+        <input type="password" id="password" name="password"
+               autocomplete="new-password" minlength="8" required>
+        <small>Mínimo 8 caracteres.</small>
+      </div>
+
+      <div class="field">
+        <label for="confirmacion">Repetir <span class="req">*</span></label>
+        <input type="password" id="confirmacion" name="confirmacion"
+               autocomplete="new-password" minlength="8" required>
+      </div>
+
+      <button type="submit" class="btn btn--primary">Cambiar contraseña</button>
+    </form>
+  </section>
+</main>
+
+</body>
+</html>

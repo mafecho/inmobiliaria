@@ -11,8 +11,32 @@ function notFoundHandler(req, res, next) {
 
 // Recibe config/logger como parámetros (no un singleton) para poder testear
 // sin manipular el registro de módulos.
+// multer lanza MulterError con un `code` propio cuando se pasa de los límites
+// configurados. Sin traducirlo, subir una foto de 8 MB daría un 500 y un
+// stack trace en el log, cuando en realidad es una entrada inválida del
+// usuario y merece un mensaje que se entienda.
+const MENSAJES_MULTER = {
+  LIMIT_FILE_SIZE: 'Alguna de las imágenes supera el tamaño máximo permitido',
+  LIMIT_FILE_COUNT: 'Se intentaron subir más imágenes de las permitidas',
+  LIMIT_UNEXPECTED_FILE: 'Se recibió un archivo en un campo inesperado'
+};
+
+function traducirMulter(err) {
+  if (err.name !== 'MulterError') return null;
+  return {
+    statusCode: 400,
+    expected: true,
+    message: MENSAJES_MULTER[err.code] || 'No se pudo procesar el archivo enviado'
+  };
+}
+
 function createErrorHandler({ config, logger }) {
   return function errorHandler(err, req, res, next) {
+    const comoMulter = traducirMulter(err);
+    if (comoMulter) {
+      Object.assign(err, comoMulter);
+    }
+
     const statusCode = err.statusCode || 500;
     const isServerError = statusCode >= 500;
     const contexto = { method: req.method, url: req.originalUrl, status: statusCode };
@@ -41,9 +65,13 @@ function createErrorHandler({ config, logger }) {
 
 const TITULOS = {
   400: 'Solicitud inválida',
+  401: 'Necesita entrar',
+  403: 'Sin permiso',
   404: 'No encontrado',
+  409: 'Conflicto',
   429: 'Demasiados intentos',
-  500: 'Error'
+  500: 'Error',
+  503: 'No disponible'
 };
 
-module.exports = { createErrorHandler, notFoundHandler, wantsJson };
+module.exports = { createErrorHandler, notFoundHandler, wantsJson, traducirMulter };

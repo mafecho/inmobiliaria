@@ -1,0 +1,14 @@
+<%
+  // Mensaje de un solo uso puesto por la acción anterior. middleware/auth.js
+  // lo borra de la sesión al exponerlo, así que no reaparece al recargar.
+%>
+<% if (typeof flash !== 'undefined' && flash) { %>
+  <div class="aviso aviso--<%= flash.tipo %>" role="status">
+    <%= flash.mensaje %>
+  </div>
+<% } %>
+<% if (typeof error !== 'undefined' && error) { %>
+  <div class="aviso aviso--error" role="alert">
+    <%= error %>
+  </div>
+<% } %>

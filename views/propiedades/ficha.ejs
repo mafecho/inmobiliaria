@@ -1,0 +1,191 @@
+<%
+  const urlCanonica = 'https://' + domain + '/propiedades/' + propiedad.slug;
+  const portada = fotos.length > 0 ? fotos[0] : null;
+  // Qué tipo de lead genera el formulario de esta ficha: quien escribe desde
+  // una propiedad en venta está comprando, y desde una en arriendo, arrendando.
+  const tipoLead = propiedad.operacion === 'arriendo' ? 'arrendar' : 'comprar';
+  const resumen = [
+    f.tipo(propiedad.tipo),
+    'en ' + f.operacion(propiedad.operacion).toLowerCase(),
+    '·', propiedad.zona,
+    '·', f.precio(propiedad.precio)
+  ].join(' ');
+%>
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= propiedad.titulo %> · Echavarría Grupo Inmobiliario</title>
+  <meta name="description" content="<%= resumen %>">
+  <link rel="canonical" href="<%= urlCanonica %>">
+
+  <%# Open Graph: es lo que hace que al pegar el enlace en WhatsApp aparezca
+      la foto, el título y el precio en vez de una URL pelada. Para una
+      inmobiliaria eso es la diferencia entre que un enlace se comparta o no. %>
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="<%= propiedad.titulo %>">
+  <meta property="og:description" content="<%= resumen %>">
+  <meta property="og:url" content="<%= urlCanonica %>">
+  <% if (portada) { %>
+    <meta property="og:image" content="https://<%= domain %>/fotos/<%= portada.archivo %>">
+  <% } %>
+  <meta name="twitter:card" content="<%= portada ? 'summary_large_image' : 'summary' %>">
+
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <%- include('../partials/header') %>
+
+  <main>
+    <nav class="migas" aria-label="Ruta de navegación">
+      <a href="/">Inicio</a> ›
+      <a href="/propiedades">Propiedades</a> ›
+      <span><%= propiedad.titulo %></span>
+    </nav>
+
+    <article class="ficha">
+      <header class="ficha__head">
+        <span class="ficha__op"><%= f.operacion(propiedad.operacion) %></span>
+        <h1><%= propiedad.titulo %></h1>
+        <p class="ficha__ubicacion"><%= f.tipo(propiedad.tipo) %> · <%= propiedad.zona %></p>
+        <p class="ficha__precio">
+          <%= f.precio(propiedad.precio) %>
+          <% if (propiedad.operacion === 'arriendo') { %><small>/ mes</small><% } %>
+        </p>
+        <% if (propiedad.administracion) { %>
+          <p class="ficha__admin">
+            + <%= f.precio(propiedad.administracion) %> de administración mensual
+          </p>
+        <% } %>
+      </header>
+
+      <% if (fotos.length > 0) { %>
+        <section class="ficha__galeria" aria-label="Fotografías">
+          <% fotos.forEach(function (foto, i) { %>
+            <img src="/fotos/<%= foto.archivo %>"
+                 alt="<%= foto.alt || (propiedad.titulo + ' — foto ' + (i + 1)) %>"
+                 class="<%= i === 0 ? 'es-portada' : '' %>"
+                 loading="<%= i === 0 ? 'eager' : 'lazy' %>"
+                 width="900" height="600">
+          <% }); %>
+        </section>
+      <% } else { %>
+        <div class="ficha__sin-fotos">
+          Las fotografías de esta propiedad están en camino.
+          <a href="/#consigna">Escríbanos</a> y se las enviamos.
+        </div>
+      <% } %>
+
+      <div class="ficha__cuerpo">
+        <div class="ficha__detalle">
+          <section>
+            <h2>Características</h2>
+            <dl class="caracteristicas">
+              <% if (propiedad.habitaciones) { %>
+                <div><dt>Habitaciones</dt><dd><%= propiedad.habitaciones %></dd></div>
+              <% } %>
+              <% if (propiedad.banos) { %>
+                <div><dt>Baños</dt><dd><%= propiedad.banos %></dd></div>
+              <% } %>
+              <% if (propiedad.parqueaderos) { %>
+                <div><dt>Parqueaderos</dt><dd><%= propiedad.parqueaderos %></dd></div>
+              <% } %>
+              <% if (f.area(propiedad.area_m2)) { %>
+                <div><dt>Área</dt><dd><%= f.area(propiedad.area_m2) %></dd></div>
+              <% } %>
+              <% if (propiedad.estrato) { %>
+                <div><dt>Estrato</dt><dd><%= propiedad.estrato %></dd></div>
+              <% } %>
+              <div><dt>Zona</dt><dd><%= propiedad.zona %></dd></div>
+              <div><dt>Operación</dt><dd><%= f.operacion(propiedad.operacion) %></dd></div>
+            </dl>
+          </section>
+
+          <% if (propiedad.descripcion) { %>
+            <section>
+              <h2>Sobre esta propiedad</h2>
+              <%# La descripción se imprime escapada a propósito: la escribe
+                  un asesor desde el panel, y aun siendo de confianza,
+                  permitir HTML ahí convertiría el panel en una vía para
+                  inyectar scripts en el sitio público. Los saltos de línea
+                  los conserva el CSS con white-space: pre-line. %>
+              <div class="ficha__descripcion"><%= propiedad.descripcion %></div>
+            </section>
+          <% } %>
+        </div>
+
+        <aside class="ficha__contacto" id="contacto">
+          <h2>¿Le interesa?</h2>
+          <p>Escríbanos y un asesor le responde — con la referencia de esta propiedad.</p>
+
+          <% if (formStatus === 'ok') { %>
+            <div class="form-banner form-banner--ok">
+              ¡Gracias! Recibimos su solicitud y le contactaremos pronto.
+            </div>
+          <% } else if (formStatus === 'error') { %>
+            <div class="form-banner form-banner--error">
+              Revise los datos — falta algún campo obligatorio o el formato no es válido.
+            </div>
+          <% } %>
+
+          <form method="POST" action="/contacto" class="consign-form">
+            <input type="hidden" name="tipo" value="<%= tipoLead %>">
+            <input type="hidden" name="volver" value="/propiedades/<%= propiedad.slug %>">
+
+            <div class="field">
+              <label for="nombre">Nombre <span class="req">*</span></label>
+              <input type="text" id="nombre" name="nombre" required maxlength="150">
+            </div>
+
+            <div class="field">
+              <label for="telefono">Teléfono <span class="req">*</span></label>
+              <input type="tel" id="telefono" name="telefono" required maxlength="30">
+            </div>
+
+            <div class="field">
+              <label for="email">Correo</label>
+              <input type="email" id="email" name="email" maxlength="150">
+            </div>
+
+            <div class="field">
+              <label for="mensaje">Mensaje</label>
+              <textarea id="mensaje" name="mensaje" rows="4" maxlength="1000">Me interesa: <%= propiedad.titulo %> (<%= propiedad.zona %>)</textarea>
+            </div>
+
+            <button type="submit" class="btn btn--primary btn--block">Solicitar información</button>
+          </form>
+
+          <% if (contacto.whatsapp) { %>
+            <a class="btn btn--ghost btn--block"
+               href="https://wa.me/<%= contacto.whatsapp %>?text=<%= encodeURIComponent('Hola, me interesa: ' + propiedad.titulo + ' — ' + urlCanonica) %>"
+               target="_blank" rel="noopener">Escribir por WhatsApp</a>
+          <% } %>
+        </aside>
+      </div>
+    </article>
+
+    <% if (similares.length > 0) { %>
+      <section class="section">
+        <div class="section-head">
+          <span class="eyebrow">También puede interesarle</span>
+          <h2>Propiedades similares</h2>
+        </div>
+        <div class="catalogo-grid">
+          <% similares.forEach(function (p) { %>
+            <%- include('../partials/propiedad-card', { p: p }) %>
+          <% }); %>
+        </div>
+      </section>
+    <% } %>
+  </main>
+
+  <%- include('../partials/footer') %>
+  <%- include('../partials/whatsapp-fab') %>
+  <script src="/js/main.js"></script>
+</body>
+</html>

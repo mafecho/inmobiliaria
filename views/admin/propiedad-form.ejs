@@ -1,0 +1,255 @@
+<%
+  // `propiedad` puede venir de dos sitios: una fila de la base (al editar) o
+  // el cuerpo crudo del formulario (al re-renderizar tras un error de
+  // validación, para no hacerle perder lo que escribió). Por eso se lee
+  // siempre con este helper y nunca se asume el tipo del valor.
+  const v = (campo) => {
+    if (!propiedad) return '';
+    const valor = propiedad[campo];
+    return valor === null || valor === undefined ? '' : valor;
+  };
+  const marcado = (campo) => {
+    const valor = propiedad ? propiedad[campo] : null;
+    return valor === 1 || valor === '1' || valor === true || valor === 'on';
+  };
+  const esNueva = !propiedad || !propiedad.id;
+  const accion = esNueva ? '/admin/propiedades' : '/admin/propiedades/' + propiedad.id;
+%>
+<%- include('partials/head', { titulo: titulo }) %>
+<%- include('partials/nav', { seccion: 'propiedades' }) %>
+
+<main class="admin-main">
+  <div class="admin-head">
+    <div>
+      <a class="volver" href="/admin">← Propiedades</a>
+      <h1><%= esNueva ? 'Nueva propiedad' : 'Editar propiedad' %></h1>
+      <% if (!esNueva && propiedad.slug) { %>
+        <p class="admin-head__sub">
+          Dirección web:
+          <code>/propiedades/<%= propiedad.slug %></code>
+          <% if (v('estado') === 'disponible') { %>
+            — <a href="/propiedades/<%= propiedad.slug %>" target="_blank" rel="noopener">ver publicada ↗</a>
+          <% } %>
+        </p>
+      <% } %>
+    </div>
+  </div>
+
+  <%- include('partials/flash') %>
+
+  <form method="post" action="<%= accion %>" class="form-grid" novalidate>
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+    <section class="panel">
+      <h2>Lo esencial</h2>
+
+      <div class="field">
+        <label for="titulo">Título <span class="req">*</span></label>
+        <input type="text" id="titulo" name="titulo" required maxlength="180"
+               value="<%= v('titulo') %>"
+               placeholder="Apartamento de 3 habitaciones con balcón">
+        <small>Es lo primero que ve quien visita el sitio, y define la dirección web.</small>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="tipo">Tipo de inmueble <span class="req">*</span></label>
+          <select id="tipo" name="tipo" required>
+            <% catalogos.tipos.forEach(function (t) { %>
+              <option value="<%= t %>" <%= v('tipo') === t ? 'selected' : '' %>><%= f.tipo(t) %></option>
+            <% }); %>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="operacion">Operación <span class="req">*</span></label>
+          <select id="operacion" name="operacion" required>
+            <% catalogos.operaciones.forEach(function (o) { %>
+              <option value="<%= o %>" <%= v('operacion') === o ? 'selected' : '' %>><%= f.operacion(o) %></option>
+            <% }); %>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="estado">Estado <span class="req">*</span></label>
+          <select id="estado" name="estado" required>
+            <% catalogos.estados.forEach(function (e) { %>
+              <option value="<%= e %>" <%= v('estado') === e ? 'selected' : '' %>><%= f.estado(e) %></option>
+            <% }); %>
+          </select>
+          <small>Sólo <strong>Disponible</strong> aparece en el sitio público.</small>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="zona">Zona / sector <span class="req">*</span></label>
+          <input type="text" id="zona" name="zona" required maxlength="80"
+                 value="<%= v('zona') %>" placeholder="Laureles" list="zonas-usadas"
+                 autocomplete="off">
+          <datalist id="zonas-usadas">
+            <% zonasUsadas.forEach(function (z) { %>
+              <option value="<%= z %>"></option>
+            <% }); %>
+          </datalist>
+          <small>Se publica tal cual. Escríbala igual en propiedades del mismo sector
+            para que el filtro del catálogo las agrupe.</small>
+        </div>
+
+        <div class="field">
+          <label for="direccion">Dirección exacta</label>
+          <input type="text" id="direccion" name="direccion" maxlength="200"
+                 value="<%= v('direccion') %>" placeholder="Carrera 70 # 44-21, apto 902">
+          <small class="interno">Uso interno — <strong>no se publica</strong> en el sitio.</small>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Precio</h2>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="precio">Precio <span class="req">*</span></label>
+          <input type="text" id="precio" name="precio" required inputmode="numeric"
+                 value="<%= v('precio') %>" placeholder="450.000.000">
+          <small>En pesos. Puede escribirlo con puntos; se guarda como número.</small>
+        </div>
+
+        <div class="field">
+          <label for="administracion">Administración mensual</label>
+          <input type="text" id="administracion" name="administracion" inputmode="numeric"
+                 value="<%= v('administracion') %>" placeholder="450.000">
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Características</h2>
+
+      <div class="field-row field-row--4">
+        <div class="field">
+          <label for="habitaciones">Habitaciones</label>
+          <input type="number" id="habitaciones" name="habitaciones" min="0" max="255"
+                 value="<%= v('habitaciones') %>">
+        </div>
+        <div class="field">
+          <label for="banos">Baños</label>
+          <input type="number" id="banos" name="banos" min="0" max="255"
+                 value="<%= v('banos') %>">
+        </div>
+        <div class="field">
+          <label for="parqueaderos">Parqueaderos</label>
+          <input type="number" id="parqueaderos" name="parqueaderos" min="0" max="255"
+                 value="<%= v('parqueaderos') %>">
+        </div>
+        <div class="field">
+          <label for="estrato">Estrato</label>
+          <input type="number" id="estrato" name="estrato" min="0" max="6"
+                 value="<%= v('estrato') %>">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="area_m2">Área construida (m²)</label>
+        <input type="text" id="area_m2" name="area_m2" inputmode="decimal"
+               value="<%= v('area_m2') %>" placeholder="110">
+      </div>
+
+      <div class="field">
+        <label for="descripcion">Descripción</label>
+        <textarea id="descripcion" name="descripcion" rows="8" maxlength="5000"
+                  placeholder="Describa el inmueble: distribución, acabados, iluminación, qué hay alrededor, por qué vale la pena."><%= v('descripcion') %></textarea>
+        <small>Hasta 5.000 caracteres. Es el texto que convence: sea concreto.</small>
+      </div>
+
+      <label class="check">
+        <input type="checkbox" name="destacada" value="1" <%= marcado('destacada') ? 'checked' : '' %>>
+        <span>
+          <strong>Destacar en la página principal</strong>
+          <small>Aparece primero en el catálogo y en la sección de destacados de la landing.</small>
+        </span>
+      </label>
+    </section>
+
+    <div class="form-acciones">
+      <button type="submit" class="btn btn--primary">
+        <%= esNueva ? 'Crear propiedad' : 'Guardar cambios' %>
+      </button>
+      <a href="/admin" class="btn btn--ghost">Cancelar</a>
+    </div>
+  </form>
+
+  <% if (!esNueva) { %>
+    <section class="panel panel--fotos">
+      <h2>Fotos <span class="contador"><%= fotos.length %> / <%= maxFotos %></span></h2>
+
+      <% if (fotos.length === 0) { %>
+        <p class="nota">
+          Esta propiedad no tiene fotos. Se puede publicar igual, pero en el sitio
+          aparecerá con un marcador de color en vez de una imagen.
+        </p>
+      <% } else { %>
+        <p class="nota">
+          La <strong>primera foto es la portada</strong>: es la que se ve en el catálogo
+          y la que aparece al compartir el enlace por WhatsApp.
+        </p>
+
+        <ul class="galeria">
+          <% fotos.forEach(function (foto, i) { %>
+            <li class="galeria__item <%= i === 0 ? 'es-portada' : '' %>">
+              <img src="/fotos/<%= foto.archivo %>" alt="" loading="lazy" width="220" height="150">
+              <% if (i === 0) { %>
+                <span class="galeria__portada">Portada</span>
+              <% } %>
+              <div class="galeria__acciones">
+                <% if (i !== 0) { %>
+                  <form method="post"
+                        action="/admin/propiedades/<%= propiedad.id %>/fotos/<%= foto.id %>/portada">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <button type="submit" class="btn btn--sm btn--ghost">Hacer portada</button>
+                  </form>
+                <% } %>
+                <form method="post"
+                      action="/admin/propiedades/<%= propiedad.id %>/fotos/<%= foto.id %>/eliminar"
+                      onsubmit="return confirm('¿Eliminar esta foto? No se puede deshacer.');">
+                  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                  <button type="submit" class="btn btn--sm btn--peligro">Eliminar</button>
+                </form>
+              </div>
+            </li>
+          <% }); %>
+        </ul>
+      <% } %>
+
+      <form method="post" action="/admin/propiedades/<%= propiedad.id %>/fotos"
+            enctype="multipart/form-data" class="subida">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <div class="field">
+          <label for="fotos">Agregar fotos</label>
+          <input type="file" id="fotos" name="fotos" accept="image/jpeg,image/png,image/webp,image/gif" multiple>
+          <small>JPG, PNG, WebP o GIF. Máximo <%= maxMb %> MB por imagen y
+            <%= maxFotos %> fotos por propiedad.</small>
+        </div>
+        <button type="submit" class="btn btn--primary">Subir</button>
+      </form>
+    </section>
+
+    <section class="panel panel--peligro">
+      <h2>Eliminar</h2>
+      <p class="nota">
+        Borra la propiedad y todas sus fotos, del sitio y del disco. No se puede deshacer.
+        Si sólo quiere sacarla de la web, cambie el estado a
+        <strong>Reservada</strong> o <strong>Cerrada</strong>.
+      </p>
+      <form method="post" action="/admin/propiedades/<%= propiedad.id %>/eliminar"
+            onsubmit="return confirm('¿Eliminar esta propiedad y sus fotos? Esta acción no se puede deshacer.');">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button type="submit" class="btn btn--peligro">Eliminar propiedad</button>
+      </form>
+    </section>
+  <% } %>
+</main>
+
+</body>
+</html>

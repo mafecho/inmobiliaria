@@ -1,0 +1,147 @@
+<%- include('partials/head', { titulo: titulo }) %>
+<%- include('partials/nav', { seccion: 'usuarios' }) %>
+
+<main class="admin-main">
+  <div class="admin-head">
+    <div>
+      <h1>Asesores</h1>
+      <p class="admin-head__sub">
+        Quién puede entrar al panel. No hay registro público: las cuentas se crean acá.
+      </p>
+    </div>
+  </div>
+
+  <%- include('partials/flash') %>
+
+  <section class="panel">
+    <h2>Cuentas</h2>
+
+    <div class="tabla-wrap">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Nombre y correo</th>
+            <th>Rol</th>
+            <th>Último acceso</th>
+            <th><span class="sr-only">Acciones</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% usuarios.forEach(function (u) { %>
+            <tr class="<%= u.activo ? '' : 'fila--inactiva' %>">
+              <td>
+                <strong><%= u.nombre %></strong>
+                <small class="tabla__meta"><%= u.email %></small>
+              </td>
+              <td>
+                <%= u.rol === 'admin' ? 'Administrador' : 'Asesor' %>
+                <% if (!u.activo) { %>
+                  <span class="pill pill--aviso">Desactivada</span>
+                <% } %>
+              </td>
+              <td>
+                <% if (u.ultimo_acceso) { %>
+                  <%= f.fecha(u.ultimo_acceso) %>
+                <% } else { %>
+                  <span class="tabla__meta">nunca entró</span>
+                <% } %>
+              </td>
+              <td class="ta-right">
+                <details class="desplegable">
+                  <summary class="btn btn--sm btn--ghost">Editar</summary>
+                  <div class="desplegable__cuerpo">
+                    <form method="post" action="/admin/usuarios/<%= u.id %>" class="form-inline">
+                      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                      <div class="field">
+                        <label for="nombre-<%= u.id %>">Nombre</label>
+                        <input type="text" id="nombre-<%= u.id %>" name="nombre"
+                               value="<%= u.nombre %>" required maxlength="150">
+                      </div>
+                      <div class="field">
+                        <label for="rol-<%= u.id %>">Rol</label>
+                        <select id="rol-<%= u.id %>" name="rol">
+                          <% catalogos.roles.forEach(function (r) { %>
+                            <option value="<%= r %>" <%= u.rol === r ? 'selected' : '' %>>
+                              <%= r === 'admin' ? 'Administrador' : 'Asesor' %>
+                            </option>
+                          <% }); %>
+                        </select>
+                      </div>
+                      <label class="check">
+                        <input type="checkbox" name="activo" value="1" <%= u.activo ? 'checked' : '' %>>
+                        <span>
+                          <strong>Cuenta activa</strong>
+                          <small>Al desactivarla se cierran sus sesiones abiertas de inmediato.</small>
+                        </span>
+                      </label>
+                      <button type="submit" class="btn btn--sm btn--primary">Guardar</button>
+                    </form>
+
+                    <form method="post" action="/admin/usuarios/<%= u.id %>/password" class="form-inline">
+                      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                      <div class="field">
+                        <label for="pass-<%= u.id %>">Nueva contraseña</label>
+                        <input type="password" id="pass-<%= u.id %>" name="password"
+                               autocomplete="new-password" minlength="8" required>
+                      </div>
+                      <div class="field">
+                        <label for="conf-<%= u.id %>">Repetir</label>
+                        <input type="password" id="conf-<%= u.id %>" name="confirmacion"
+                               autocomplete="new-password" minlength="8" required>
+                      </div>
+                      <button type="submit" class="btn btn--sm btn--ghost">Restablecer contraseña</button>
+                    </form>
+                  </div>
+                </details>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Crear una cuenta</h2>
+    <p class="nota">
+      La contraseña la define usted y se la entrega al asesor. El asesor puede
+      cambiarla después desde <em>Mi cuenta</em>.
+    </p>
+
+    <form method="post" action="/admin/usuarios" class="form-inline form-inline--ancho">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+      <div class="field-row">
+        <div class="field">
+          <label for="nuevo-nombre">Nombre <span class="req">*</span></label>
+          <input type="text" id="nuevo-nombre" name="nombre" required maxlength="150">
+        </div>
+        <div class="field">
+          <label for="nuevo-email">Correo <span class="req">*</span></label>
+          <input type="email" id="nuevo-email" name="email" required maxlength="190">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="nuevo-password">Contraseña <span class="req">*</span></label>
+          <input type="password" id="nuevo-password" name="password"
+                 autocomplete="new-password" minlength="8" required>
+          <small>Mínimo 8 caracteres.</small>
+        </div>
+        <div class="field">
+          <label for="nuevo-rol">Rol</label>
+          <select id="nuevo-rol" name="rol">
+            <option value="asesor">Asesor — carga y edita propiedades</option>
+            <option value="admin">Administrador — además gestiona cuentas</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn--primary">Crear cuenta</button>
+    </form>
+  </section>
+</main>
+
+</body>
+</html>

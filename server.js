@@ -7,6 +7,27 @@ const config = loadConfig();
 const container = createContainer(config);
 const app = createApp(container);
 
+// La carpeta de fotos se prepara al arrancar, no en la primera subida: si
+// falla por permisos, es mejor verlo en el log del arranque que cuando un
+// asesor está intentando publicar una propiedad.
+if (!container.services.fotos.asegurarCarpeta()) {
+  container.logger.warn(
+    'La carpeta de fotos no está disponible: se podrá navegar el sitio, '
+    + 'pero no subir imágenes nuevas',
+    { dir: config.uploads.dir }
+  );
+}
+
+// Aviso temprano y explícito: en producción sin SESSION_SECRET el panel
+// responde 503 en todas sus rutas. No se cae el proceso a propósito — la
+// landing pública no depende de eso.
+if (!config.session.habilitado) {
+  container.logger.error(
+    'Falta SESSION_SECRET: el panel de administración queda deshabilitado. '
+    + 'El sitio público funciona normalmente.'
+  );
+}
+
 // Escuchar primero y migrar después, a propósito.
 //
 // La landing (`GET /`) se renderiza sólo con valores de config: no toca la
@@ -37,8 +58,8 @@ runMigrations(config.db, container.logger).then(({ aplicadas }) => {
   }
 }).catch(err => {
   container.logger.excepcion(
-    'No se pudo inicializar la base de datos: la landing se sirve igual, ' +
-    'pero el formulario no va a guardar leads hasta que se resuelva',
+    'No se pudo inicializar la base de datos: la landing se sirve igual, '
+    + 'pero el formulario no va a guardar leads hasta que se resuelva',
     err
   );
 });

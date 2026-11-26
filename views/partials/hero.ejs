@@ -8,44 +8,57 @@
     estructurales — con el mismo equipo de principio a fin.
   </p>
 
-  <div class="segmented" role="tablist" aria-label="Qué desea hacer">
-    <button type="button" class="is-active" data-lead-tipo="comprar" data-lead-etiqueta="Comprar una propiedad" onclick="document.getElementById('destacados').scrollIntoView({behavior:'smooth'})">Comprar</button>
-    <button type="button" data-lead-tipo="arrendar" data-lead-etiqueta="Arrendar una propiedad" onclick="document.getElementById('destacados').scrollIntoView({behavior:'smooth'})">Arrendar</button>
-    <button type="button" data-lead-tipo="consignar" data-lead-etiqueta="Consignar mi inmueble" onclick="document.getElementById('consigna').scrollIntoView({behavior:'smooth'})">Consignar</button>
+  <%# Hasta la Fase 2 estos tres botones sólo hacían scroll. Ahora los dos
+      primeros llevan al catálogo ya filtrado por operación. %>
+  <div class="segmented" role="group" aria-label="Qué desea hacer">
+    <a href="/propiedades?operacion=venta">Comprar</a>
+    <a href="/propiedades?operacion=arriendo">Arrendar</a>
+    <a href="#consigna" data-lead-tipo="consignar" data-lead-etiqueta="Consignar mi inmueble">Consignar</a>
   </div>
 
-  <div class="search-card">
+  <%# Buscador real: GET al catálogo con los mismos nombres de campo que
+      espera validators/filtrosSchema. Antes era decorativo — los selects no
+      filtraban nada y el botón sólo bajaba la página. %>
+  <form class="search-card" method="get" action="/propiedades">
     <div class="search-card__grid">
       <div class="field">
         <label for="hero-tipo">Tipo de inmueble</label>
-        <select id="hero-tipo">
-          <option>Apartamento</option>
-          <option>Casa</option>
-          <option>Penthouse</option>
-          <option>Lote</option>
-          <option>Local / Oficina</option>
+        <select id="hero-tipo" name="tipo">
+          <option value="">Cualquier tipo</option>
+          <% tipos.forEach(function (t) { %>
+            <option value="<%= t %>"><%= f.tipo(t) %></option>
+          <% }); %>
         </select>
       </div>
+
       <div class="field">
         <label for="hero-zona">Zona</label>
-        <select id="hero-zona">
-          <option>Cualquier zona</option>
-          <option>Norte</option>
-          <option>Centro</option>
-          <option>Sur</option>
+        <select id="hero-zona" name="zona">
+          <option value="">Cualquier zona</option>
+          <%# Sólo zonas con propiedades publicadas: ofrecer un filtro que
+              devuelve cero resultados es peor que no ofrecerlo. %>
+          <% zonas.forEach(function (z) { %>
+            <option value="<%= z %>"><%= z %></option>
+          <% }); %>
         </select>
       </div>
+
       <div class="field">
         <label for="hero-precio">Presupuesto</label>
-        <select id="hero-precio">
-          <option>Cualquier precio</option>
-          <option>Hasta $300M</option>
-          <option>$300M - $600M</option>
-          <option>Más de $600M</option>
+        <%# Un solo select no puede fijar mínimo y máximo a la vez, así que
+            acá se filtra por tope. El rango completo está en el catálogo. %>
+        <select id="hero-precio" name="precioMax">
+          <option value="">Cualquier precio</option>
+          <option value="300000000">Hasta $300 M</option>
+          <option value="600000000">Hasta $600 M</option>
+          <option value="1000000000">Hasta $1.000 M</option>
         </select>
       </div>
     </div>
-    <a href="#destacados" class="btn btn--primary btn--block">Buscar propiedades</a>
-    <p class="search-card__note">Catálogo completo en construcción — vea una muestra del portafolio abajo.</p>
-  </div>
+
+    <button type="submit" class="btn btn--primary btn--block">Buscar propiedades</button>
+    <p class="search-card__note">
+      <a href="/propiedades">Ver el catálogo completo →</a>
+    </p>
+  </form>
 </section>

@@ -1,42 +1,45 @@
 <%
-  // Portafolio de ejemplo — Fase 1 no tiene catálogo en base de datos todavía
-  // (eso es Fase 2). Tarjetas con imagen placeholder, nunca con fotos de
-  // terceros sin derechos.
-  const muestra = [
-    { tipo: 'Apartamento', operacion: 'Venta', zona: 'Zona Norte', precio: 'Desde $450M', habs: 3, banos: 2, area: '110 m²' },
-    { tipo: 'Casa', operacion: 'Venta', zona: 'Zona Sur', precio: 'Desde $680M', habs: 4, banos: 3, area: '180 m²' },
-    { tipo: 'Apartamento', operacion: 'Arriendo', zona: 'Centro', precio: 'Desde $2.2M / mes', habs: 2, banos: 1, area: '75 m²' }
-  ];
+  // Fase 2: estas tarjetas salen de la base de datos. Hasta el 2026-11-26
+  // acá había un arreglo de propiedades de ejemplo escrito a mano dentro de
+  // este mismo template.
+  //
+  // `destacadas` lo arma routes/public.js y llega vacío si la consulta falla,
+  // a propósito: el resto de la landing —servicios, formulario, FAQ— no
+  // depende de la base, y no tiene por qué caerse con ella.
 %>
 <section class="section" id="destacados">
   <div class="section-head">
     <span class="eyebrow">Portafolio</span>
     <h2>Una muestra de nuestras propiedades</h2>
-    <p>Catálogo de ejemplo mientras publicamos el inventario completo. Escríbanos para recibir opciones a su medida.</p>
+    <% if (destacadas.length > 0) { %>
+      <p>Propiedades disponibles ahora mismo. Escríbanos para recibir opciones a su medida.</p>
+    <% } else { %>
+      <p>Estamos cargando el inventario. Escríbanos y le enviamos opciones a su medida.</p>
+    <% } %>
   </div>
 
-  <div class="properties-scroller">
-    <% muestra.forEach(function (p) { %>
-      <article class="property-card">
-        <div class="property-card__media">
-          <span class="property-card__badge">Próximamente</span>
-          Fotografía en camino
-        </div>
-        <div class="property-card__body">
-          <h3><%= p.tipo %> en <%= p.operacion.toLowerCase() %></h3>
-          <p class="property-card__location"><%= p.zona %></p>
-          <p class="property-card__price"><%= p.precio %></p>
-          <div class="property-card__meta">
-            <span><%= p.habs %> hab.</span>
-            <span><%= p.banos %> baños</span>
-            <span><%= p.area %></span>
-          </div>
-        </div>
-      </article>
-    <% }); %>
-  </div>
+  <% if (destacadas.length > 0) { %>
+    <div class="properties-scroller">
+      <% destacadas.forEach(function (p) { %>
+        <%- include('propiedad-card', { p: p }) %>
+      <% }); %>
+    </div>
 
-  <p class="properties-note">
-    ¿Busca algo específico? <a href="#consigna" data-lead-tipo="comprar" data-lead-etiqueta="Buscar una propiedad a la medida" style="color: var(--color-primary); font-weight: 700;">Cuéntenos qué necesita →</a>
-  </p>
+    <p class="properties-note">
+      <a href="/propiedades" class="btn btn--primary">Ver todas las propiedades</a>
+    </p>
+  <% } else { %>
+    <div class="vacio vacio--publico">
+      <p>
+        Todavía no hay propiedades publicadas en el sitio.
+        Cuéntenos qué está buscando y un asesor le responde con opciones concretas.
+      </p>
+      <div class="vacio__acciones">
+        <a href="#consigna" class="btn btn--primary"
+           data-lead-tipo="comprar" data-lead-etiqueta="Buscar una propiedad a la medida">
+          Cuéntenos qué necesita
+        </a>
+      </div>
+    </div>
+  <% } %>
 </section>

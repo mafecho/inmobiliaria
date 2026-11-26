@@ -1,0 +1,170 @@
+<%
+  // Construye el querystring de la paginación conservando los filtros
+  // activos. Sin esto, pasar a la página 2 perdería el filtro y mostraría
+  // resultados que no corresponden a lo que el visitante pidió.
+  const qs = (pagina) => {
+    const p = new URLSearchParams();
+    if (filtros.tipo) p.set('tipo', filtros.tipo);
+    if (filtros.operacion) p.set('operacion', filtros.operacion);
+    if (filtros.zona) p.set('zona', filtros.zona);
+    if (filtros.precioMin !== undefined) p.set('precioMin', filtros.precioMin);
+    if (filtros.precioMax !== undefined) p.set('precioMax', filtros.precioMax);
+    if (filtros.habitaciones !== undefined) p.set('habitaciones', filtros.habitaciones);
+    if (pagina > 1) p.set('pagina', pagina);
+    const s = p.toString();
+    return s ? '?' + s : '';
+  };
+  const hayFiltros = Boolean(
+    filtros.tipo || filtros.operacion || filtros.zona
+    || filtros.precioMin !== undefined || filtros.precioMax !== undefined
+    || filtros.habitaciones !== undefined
+  );
+%>
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= titulo %> · Echavarría Grupo Inmobiliario</title>
+  <meta name="description" content="Propiedades disponibles en venta y arriendo. Apartamentos, casas, lotes y locales con acompañamiento jurídico y técnico de principio a fin.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <%- include('../partials/header') %>
+
+  <main>
+    <section class="catalogo-head">
+      <span class="eyebrow">Portafolio</span>
+      <h1>Propiedades disponibles</h1>
+      <p class="lead">
+        <%= total %> <%= total === 1 ? 'propiedad publicada' : 'propiedades publicadas' %>.
+        ¿No encuentra lo que busca?
+        <a href="/#consigna">Cuéntenos qué necesita</a> y le enviamos opciones a su medida.
+      </p>
+    </section>
+
+    <section class="section">
+      <form class="filtros" method="get" action="/propiedades">
+        <div class="filtros__grid">
+          <div class="field">
+            <label for="operacion">Operación</label>
+            <select id="operacion" name="operacion">
+              <option value="">Venta y arriendo</option>
+              <% operaciones.forEach(function (o) { %>
+                <option value="<%= o %>" <%= filtros.operacion === o ? 'selected' : '' %>><%= f.operacion(o) %></option>
+              <% }); %>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="tipo">Tipo de inmueble</label>
+            <select id="tipo" name="tipo">
+              <option value="">Cualquier tipo</option>
+              <% tipos.forEach(function (t) { %>
+                <option value="<%= t %>" <%= filtros.tipo === t ? 'selected' : '' %>><%= f.tipo(t) %></option>
+              <% }); %>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="zona">Zona</label>
+            <select id="zona" name="zona">
+              <option value="">Cualquier zona</option>
+              <%# Las zonas salen de lo que hay publicado, no de una lista fija. %>
+              <% zonas.forEach(function (z) { %>
+                <option value="<%= z %>" <%= filtros.zona === z ? 'selected' : '' %>><%= z %></option>
+              <% }); %>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="habitaciones">Habitaciones (mínimo)</label>
+            <select id="habitaciones" name="habitaciones">
+              <option value="">Cualquiera</option>
+              <% [1, 2, 3, 4, 5].forEach(function (n) { %>
+                <option value="<%= n %>" <%= filtros.habitaciones === n ? 'selected' : '' %>><%= n %>+</option>
+              <% }); %>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="precioMin">Precio desde</label>
+            <input type="text" id="precioMin" name="precioMin" inputmode="numeric"
+                   value="<%= filtros.precioMin !== undefined ? filtros.precioMin : '' %>"
+                   placeholder="200.000.000">
+          </div>
+
+          <div class="field">
+            <label for="precioMax">Precio hasta</label>
+            <input type="text" id="precioMax" name="precioMax" inputmode="numeric"
+                   value="<%= filtros.precioMax !== undefined ? filtros.precioMax : '' %>"
+                   placeholder="600.000.000">
+          </div>
+        </div>
+
+        <div class="filtros__acciones">
+          <button type="submit" class="btn btn--primary">Filtrar</button>
+          <% if (hayFiltros) { %>
+            <a href="/propiedades" class="btn btn--ghost">Quitar filtros</a>
+          <% } %>
+        </div>
+      </form>
+
+      <% if (propiedades.length === 0) { %>
+        <div class="vacio vacio--publico">
+          <h2>
+            <% if (hayFiltros) { %>
+              Ninguna propiedad coincide con esos filtros
+            <% } else { %>
+              Todavía no hay propiedades publicadas
+            <% } %>
+          </h2>
+          <p>
+            <% if (hayFiltros) { %>
+              Pruebe con un rango de precio más amplio o quite algún filtro.
+            <% } else { %>
+              Estamos cargando el inventario. Mientras tanto, cuéntenos qué busca
+              y le enviamos opciones apenas las tengamos.
+            <% } %>
+          </p>
+          <div class="vacio__acciones">
+            <% if (hayFiltros) { %>
+              <a href="/propiedades" class="btn btn--primary">Ver todas</a>
+            <% } %>
+            <a href="/#consigna" class="btn btn--ghost">Cuéntenos qué busca</a>
+          </div>
+        </div>
+      <% } else { %>
+        <div class="catalogo-grid">
+          <% propiedades.forEach(function (p) { %>
+            <%- include('../partials/propiedad-card', { p: p }) %>
+          <% }); %>
+        </div>
+
+        <% if (totalPaginas > 1) { %>
+          <nav class="paginacion" aria-label="Paginación del catálogo">
+            <% if (pagina > 1) { %>
+              <a href="/propiedades<%= qs(pagina - 1) %>" rel="prev">← Anterior</a>
+            <% } %>
+            <% for (let i = 1; i <= totalPaginas; i += 1) { %>
+              <a href="/propiedades<%= qs(i) %>" class="<%= i === pagina ? 'is-active' : '' %>"
+                 <%= i === pagina ? 'aria-current="page"' : '' %>><%= i %></a>
+            <% } %>
+            <% if (pagina < totalPaginas) { %>
+              <a href="/propiedades<%= qs(pagina + 1) %>" rel="next">Siguiente →</a>
+            <% } %>
+          </nav>
+        <% } %>
+      <% } %>
+    </section>
+  </main>
+
+  <%- include('../partials/footer') %>
+  <%- include('../partials/whatsapp-fab') %>
+  <script src="/js/main.js"></script>
+</body>
+</html>

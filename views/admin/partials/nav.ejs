@@ -1,0 +1,34 @@
+<header class="admin-bar">
+  <a class="admin-bar__brand" href="/admin">
+    <span class="admin-bar__mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 10.5 12 4l9 6.5"></path>
+        <path d="M5 9.5V20h14V9.5"></path>
+        <path d="M10 20v-5h4v5"></path>
+      </svg>
+    </span>
+    <span>
+      <strong>Echavarría</strong>
+      <small>Panel de propiedades</small>
+    </span>
+  </a>
+
+  <nav class="admin-bar__nav" aria-label="Secciones del panel">
+    <a href="/admin" class="<%= seccion === 'propiedades' ? 'is-active' : '' %>">Propiedades</a>
+    <% if (usuario && usuario.rol === 'admin') { %>
+      <a href="/admin/usuarios" class="<%= seccion === 'usuarios' ? 'is-active' : '' %>">Asesores</a>
+    <% } %>
+    <a href="/propiedades" target="_blank" rel="noopener">Ver el sitio ↗</a>
+  </nav>
+
+  <div class="admin-bar__user">
+    <a href="/admin/mi-cuenta" class="admin-bar__whoami">
+      <span><%= usuario.nombre %></span>
+      <small><%= usuario.rol === 'admin' ? 'Administrador' : 'Asesor' %></small>
+    </a>
+    <form method="post" action="/admin/logout">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <button type="submit" class="btn btn--ghost btn--sm">Salir</button>
+    </form>
+  </div>
+</header>

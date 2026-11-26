@@ -1,0 +1,121 @@
+<%- include('partials/head', { titulo: titulo }) %>
+<%- include('partials/nav', { seccion: 'propiedades' }) %>
+
+<main class="admin-main">
+  <div class="admin-head">
+    <div>
+      <h1>Propiedades</h1>
+      <p class="admin-head__sub">
+        <%= total %> <%= total === 1 ? 'propiedad' : 'propiedades' %>
+        <%= estadoActual ? 'en estado ' + f.estado(estadoActual).toLowerCase() : 'en total' %>
+      </p>
+    </div>
+    <a href="/admin/propiedades/nueva" class="btn btn--primary">+ Nueva propiedad</a>
+  </div>
+
+  <%- include('partials/flash') %>
+
+  <nav class="filtros-estado" aria-label="Filtrar por estado">
+    <a href="/admin" class="<%= !estadoActual ? 'is-active' : '' %>">
+      Todas
+    </a>
+    <% catalogos.estados.forEach(function (e) { %>
+      <a href="/admin?estado=<%= e %>" class="<%= estadoActual === e ? 'is-active' : '' %>">
+        <%= f.estado(e) %>
+        <span class="pill"><%= conteos[e] || 0 %></span>
+      </a>
+    <% }); %>
+  </nav>
+
+  <% if (propiedades.length === 0) { %>
+    <div class="vacio">
+      <h2>Todavía no hay propiedades acá</h2>
+      <p>
+        <% if (estadoActual) { %>
+          No hay ninguna propiedad en estado <%= f.estado(estadoActual).toLowerCase() %>.
+          <a href="/admin">Ver todas</a>.
+        <% } else { %>
+          Cree la primera propiedad y súbale fotos. Mientras esté en
+          <strong>borrador</strong> no aparece en el sitio público;
+          cuando la marque como <strong>disponible</strong>, sí.
+        <% } %>
+      </p>
+      <a href="/admin/propiedades/nueva" class="btn btn--primary">+ Nueva propiedad</a>
+    </div>
+  <% } else { %>
+    <div class="tabla-wrap">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Propiedad</th>
+            <th>Operación</th>
+            <th class="ta-right">Precio</th>
+            <th class="ta-center">Fotos</th>
+            <th>Estado</th>
+            <th><span class="sr-only">Acciones</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% propiedades.forEach(function (p) { %>
+            <tr>
+              <td>
+                <a class="tabla__titulo" href="/admin/propiedades/<%= p.id %>"><%= p.titulo %></a>
+                <small class="tabla__meta">
+                  <%= f.tipo(p.tipo) %> · <%= p.zona %>
+                  <% if (p.creador_nombre) { %> · creada por <%= p.creador_nombre %><% } %>
+                </small>
+              </td>
+              <td><%= f.operacion(p.operacion) %></td>
+              <td class="ta-right"><strong><%= f.precio(p.precio) %></strong></td>
+              <td class="ta-center">
+                <% if (p.total_fotos > 0) { %>
+                  <%= p.total_fotos %>
+                <% } else { %>
+                  <span class="pill pill--aviso" title="Sin fotos no se ve bien en el sitio">0</span>
+                <% } %>
+              </td>
+              <td><span class="estado estado--<%= p.estado %>"><%= f.estado(p.estado) %></span></td>
+              <td class="ta-right">
+                <div class="acciones">
+                  <% if (p.estado !== 'disponible') { %>
+                    <form method="post" action="/admin/propiedades/<%= p.id %>/estado">
+                      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                      <input type="hidden" name="estado" value="disponible">
+                      <input type="hidden" name="volver" value="/admin<%= estadoActual ? '?estado=' + estadoActual : '' %>">
+                      <button type="submit" class="btn btn--sm btn--ghost"
+                              <%= p.total_fotos === 0 ? 'title="Se publicará sin fotos"' : '' %>>
+                        Publicar
+                      </button>
+                    </form>
+                  <% } else { %>
+                    <form method="post" action="/admin/propiedades/<%= p.id %>/estado">
+                      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                      <input type="hidden" name="estado" value="reservada">
+                      <input type="hidden" name="volver" value="/admin<%= estadoActual ? '?estado=' + estadoActual : '' %>">
+                      <button type="submit" class="btn btn--sm btn--ghost">Marcar reservada</button>
+                    </form>
+                    <a class="btn btn--sm btn--ghost" href="/propiedades/<%= p.slug %>"
+                       target="_blank" rel="noopener">Ver ↗</a>
+                  <% } %>
+                  <a class="btn btn--sm" href="/admin/propiedades/<%= p.id %>">Editar</a>
+                </div>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+
+    <% if (totalPaginas > 1) { %>
+      <nav class="paginacion" aria-label="Paginación">
+        <% for (let i = 1; i <= totalPaginas; i += 1) { %>
+          <a href="/admin?pagina=<%= i %><%= estadoActual ? '&estado=' + estadoActual : '' %>"
+             class="<%= i === pagina ? 'is-active' : '' %>"><%= i %></a>
+        <% } %>
+      </nav>
+    <% } %>
+  <% } %>
+</main>
+
+</body>
+</html>

@@ -1,0 +1,40 @@
+<%
+  // Tarjeta de propiedad. La comparten el catálogo (/propiedades), la ficha
+  // individual (propiedades similares) y la sección de destacados de la
+  // landing, para que las tres se vean igual y se arreglen en un solo sitio.
+  //
+  // Espera `p`: una fila pública de propiedades con `p.foto` ya resuelta por
+  // propiedadService.conFotoPrincipal (puede ser null).
+%>
+<article class="property-card">
+  <a class="property-card__link" href="/propiedades/<%= p.slug %>">
+    <div class="property-card__media">
+      <% if (p.foto) { %>
+        <img src="/fotos/<%= p.foto.archivo %>"
+             alt="<%= p.foto.alt || p.titulo %>"
+             loading="lazy" width="400" height="280">
+      <% } else { %>
+        <%# Sin fotos todavía: marcador de color, nunca una imagen de terceros. %>
+        <span class="property-card__badge">Próximamente</span>
+        Fotografía en camino
+      <% } %>
+      <span class="property-card__op"><%= f.operacion(p.operacion) %></span>
+    </div>
+
+    <div class="property-card__body">
+      <h3><%= p.titulo %></h3>
+      <p class="property-card__location"><%= f.tipo(p.tipo) %> · <%= p.zona %></p>
+      <p class="property-card__price">
+        <%= f.precioCorto(p.precio) %>
+        <% if (p.operacion === 'arriendo') { %><small>/ mes</small><% } %>
+      </p>
+
+      <div class="property-card__meta">
+        <% if (p.habitaciones) { %><span><%= p.habitaciones %> hab.</span><% } %>
+        <% if (p.banos) { %><span><%= p.banos %> baños</span><% } %>
+        <% if (f.area(p.area_m2)) { %><span><%= f.area(p.area_m2) %></span><% } %>
+        <% if (p.parqueaderos) { %><span><%= p.parqueaderos %> parq.</span><% } %>
+      </div>
+    </div>
+  </a>
+</article>

@@ -38,14 +38,10 @@
     });
   });
 
-  // Control segmentado del hero: sólo cambia el estado visual y hacia dónde
-  // desplaza — la búsqueda real de propiedades es Fase 2.
-  document.querySelectorAll('.segmented button').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.segmented button').forEach((b) => b.classList.remove('is-active'));
-      btn.classList.add('is-active');
-    });
-  });
+  // El control segmentado del hero ya no necesita JavaScript: desde la Fase 2
+  // "Comprar" y "Arrendar" son enlaces al catálogo filtrado por operación
+  // (/propiedades?operacion=...), así que el estado visual lo marca el propio
+  // navegador y la navegación funciona con JS deshabilitado.
 
   // Contador animado simple, para cuando haya una cifra real que mostrar.
   document.querySelectorAll('[data-counter]').forEach((el) => {
